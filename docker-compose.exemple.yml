@@ -1,0 +1,65 @@
+version: "3"
+services:
+  nextcloud-db:
+    image: mysql:8.0.33
+    container_name: nextcloud-db
+    hostname: nextcloud-db
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: unless-stopped
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - MYSQL_USER=$MYSQL_USER
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+      - MYSQL_PASSWORD=$MYSQL_PASSWORD
+      - MYSQL_DATABASE=$MYSQL_DATABASE
+      - MYSQL_HOST=$MYSQL_HOST
+      - REDIS_HOST=$REDIS_HOST
+#    ports:
+#      - 3308:3306
+    volumes:
+      - /volume2/docker/nextcloud/nextcloud-data-db:/var/lib/mysql
+  nextcloud-redis:
+    image: redis:latest
+    container_name: nextcloud-redis
+    environment:
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - MYSQL_USER=$MYSQL_USER
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+      - MYSQL_PASSWORD=$MYSQL_PASSWORD
+      - MYSQL_DATABASE=$MYSQL_DATABASE
+      - MYSQL_HOST=$MYSQL_HOST
+      - REDIS_HOST=$REDIS_HOST
+    hostname: nextcloud-redis
+    restart: unless-stopped
+
+  nextcloud-app:
+    image: nextcloud:30.0.0-apache
+    container_name: nextcloud-app
+    hostname: nextcloud-app
+    restart: unless-stopped
+    environment:
+      - MY_DOMAIN=$MY_DOMAIN
+      - TZ=$TZ
+      - PUID=$PUID
+      - PGID=$PGID
+      - MYSQL_USER=$MYSQL_USER
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+      - MYSQL_PASSWORD=$MYSQL_PASSWORD
+      - MYSQL_DATABASE=$MYSQL_DATABASE
+      - MYSQL_HOST=$MYSQL_HOST
+      - REDIS_HOST=$REDIS_HOST
+    ports:
+      - 6161:80
+      - 6162:443
+    depends_on:
+      - nextcloud-db
+      - nextcloud-redis
+    volumes:
+      - /volume2/docker/nextcloud/nextcloud-data-maj/:/var/www/html
+      - /volume2/docker/nextcloud/certs/:/etc/certs
+      - /volume2/docker/nextcloud/default-ssl.conf:/etc/apache2/site-availables/default-ssl.conf
+     # - /volume1/COURS02:/COURS02

@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  user-service:
+    environment:
+      NODE_ENV: production
+
+  task-service:
+    environment:
+      FLASK_ENV: production
+
+  web-frontend:
+    environment:
+      APP_ENV: production
+
+  postgres:
+    image: postgres:13-alpine
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+volumes:
+  postgres-data:
+    driver: local

@@ -1,0 +1,9 @@
+DB : 1 replicas
+frontend: 3 replicas
+backend : 2 replicas
+
+DB placement obligatoire sur le manager
+le frontend replicas mode globale
+le reste sur worker obligatoire
+Paralelisme à NB-1
+Healthcheck
